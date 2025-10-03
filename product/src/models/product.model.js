@@ -8,7 +8,21 @@ const productSchema = new mongoose.Schema({
 
     price:{
         amount:{ type:Number, required:true },
-        currency:{ type:String, required:true }
+        currency:{ type:String, enum:['USD','INR'], default:'INR' }
     },
 
+    seller:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
+    images:[{
+        url:String,
+        thumbnail:String,
+        id:String
+    }]
+
 })
+
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
+
+module.exports = Product;
