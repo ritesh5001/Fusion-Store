@@ -32,8 +32,8 @@ function parsePrice(body) {
   }
 
   throw new Error('Price information is required.');
-}
-
+} 
+ 
 async function uploadImages(files = []) {
   if (!files.length) {
     return [];
@@ -108,7 +108,11 @@ async function createProduct(req, res) {
   }
 }
 
+async function getProducts(req, res) {
+  
+}
 
 module.exports = {
-  createProduct
+  createProduct,
+  getProducts
 };

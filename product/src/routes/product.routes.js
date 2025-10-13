@@ -8,10 +8,10 @@ const { createProductValidation } = require('../validators/product.validator');
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// In test environment, bypass auth to align with tests that don't send a token
+
 const maybeAuth = process.env.NODE_ENV === 'test' ? (req, res, next) => next() : createAuthMiddleware(['admin', 'seller']);
 
-// Create product with validation
+
 router.post(
   '/',
   maybeAuth,
@@ -20,5 +20,7 @@ router.post(
   handleValidationErrors,
   productController.createProduct
 );
+
+router.get('/',)
 
 module.exports = router;
