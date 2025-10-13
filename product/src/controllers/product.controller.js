@@ -1,4 +1,4 @@
-const Product = require('../models/product.model');
+const ProductModel = require('../models/product.model');
 const imagekit = require('../config/imagekit');
 const upload = require('../middlewares/upload');
 
@@ -83,7 +83,7 @@ async function createProduct(req, res) {
     }
 
     // Create the product
-    const product = new Product({
+    const product = new ProductModel({
       title,
       description,
       price,
@@ -109,7 +109,45 @@ async function createProduct(req, res) {
 }
 
 async function getProducts(req, res) {
-  
+  try {
+    const { q, minprice, maxprice, skip = 0, limit = 20 } = req.query;
+
+    const filter = {};
+
+    if (q) {
+      filter.$text = { $search: q };
+    }
+
+    if (minprice !== undefined) {
+      filter['price.amount'] = {
+        ...(filter['price.amount'] || {}),
+        $gte: Number(minprice)
+      };
+    }
+
+    if (maxprice !== undefined) {
+      filter['price.amount'] = {
+        ...(filter['price.amount'] || {}),
+        $lte: Number(maxprice)
+      };
+    }
+
+    const products = await ProductModel.find(filter)
+      .skip(Number(skip))
+      .limit(Number(limit));
+
+    return res.status(200).json({
+      success: true,
+      data: products
+    });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch products',
+      error: error.message
+    });
+  }
 }
 
 module.exports = {

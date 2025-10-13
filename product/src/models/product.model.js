@@ -6,6 +6,11 @@ const productSchema = new mongoose.Schema({
         required:true
     },
 
+    description: {
+        type: String,
+        required: false
+    },
+
     price:{
         amount:{ type:Number, required:true },
         currency:{ type:String, enum:['USD','INR'], default:'INR' }
@@ -22,6 +27,9 @@ const productSchema = new mongoose.Schema({
     }]
 
 })
+
+// Text index for search queries (used by GET /api/products with ?q=)
+productSchema.index({ title: 'text', description: 'text' });
 
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
