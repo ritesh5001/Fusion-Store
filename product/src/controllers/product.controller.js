@@ -1,4 +1,5 @@
 const ProductModel = require('../models/product.model');
+const mongoose = require('mongoose');
 const imagekit = require('../config/imagekit');
 const upload = require('../middlewares/upload');
 
@@ -150,7 +151,28 @@ async function getProducts(req, res) {
   }
 }
 
+async function getProductById(req, res) {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid product id' });
+    }
+
+    const product = await ProductModel.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    return res.status(200).json({ product });
+  } catch (error) {
+    console.error('Error fetching product by id:', error);
+    return res.status(500).json({ message: 'Failed to fetch product', error: error.message });
+  }
+}
+
 module.exports = {
   createProduct,
-  getProducts
+  getProducts,
+  getProductById,
 };
