@@ -21,7 +21,6 @@ router.post(
   productController.createProduct
 );
 
-router.get('/:id', productController.getProductById);
 
 router.get('/', productController.getProducts)
 
@@ -32,5 +31,11 @@ router.patch(
   handleValidationErrors,
   productController.updateProduct
 );
+
+router.delete('/:id', maybeAuth, productController.deleteProduct);
+
+router.get('/seller',createAuthMiddleware(["seller"]), productController.getProductsBySeller);
+
+router.get('/:id', productController.getProductById);
 
 module.exports = router;

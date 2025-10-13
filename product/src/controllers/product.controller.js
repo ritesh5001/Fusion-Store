@@ -206,9 +206,42 @@ async function updateProduct(req, res) {
   await product.save();
   return res.status(200).json({ success: true, data: product });
 }
+
+async function deleteProduct(req, res) {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid product id' });
+  }
+  
+  const product = await ProductModel.findById(id);
+  if (!product) {
+    return res.status(404).json({ message: 'Product not found' });
+  }
+  
+  if (req.user?.id && product.seller.toString() !== req.user.id) {
+    return res.status(403).json({ message: 'Forbidden: You are not the seller of this product' });
+  }
+
+  await ProductModel.deleteOne({ _id: id });
+  return res.status(200).json({ success: true, message: 'Product deleted successfully' });
+
+}
+
+async function getProductsBySeller(req, res) {
+  const seller = req.user
+
+  const { skip = 0, limit = 20 } = req.query;
+
+  const products = await ProductModel.find({ seller: seller.id }).skip(skip).limit(Math.min(limit, 20));
+
+  return res.status(200).json({ data: products });
+}
+
   module.exports = {
     createProduct,
     getProducts,
     getProductById,
     updateProduct,
+    deleteProduct,
+    getProductsBySeller
   };
