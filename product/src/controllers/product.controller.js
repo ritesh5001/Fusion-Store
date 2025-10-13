@@ -33,8 +33,8 @@ function parsePrice(body) {
   }
 
   throw new Error('Price information is required.');
-} 
- 
+}
+
 async function uploadImages(files = []) {
   if (!files.length) {
     return [];
@@ -171,8 +171,44 @@ async function getProductById(req, res) {
   }
 }
 
-module.exports = {
-  createProduct,
-  getProducts,
-  getProductById,
-};
+async function updateProduct(req, res) {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid product id' });
+  }
+
+  const query = { _id: id };
+  if (req.user?.id) {
+    query.seller = req.user.id;
+  }
+
+  const product = await ProductModel.findOne(query);
+
+  if (!product) {
+    return res.status(404).json({ message: 'Product not found' });
+  }
+
+  const allowedUpdates = ['title', 'description', 'price'];
+  for (let key of Object.keys(req.body)) {
+    if (!allowedUpdates.includes(key)) continue;
+    if (key === 'price' && typeof req.body.price === 'object') {
+      if (req.body.price.amount !== undefined) {
+        product.price.amount = Number(req.body.price.amount);
+      }
+      if (req.body.price.currency !== undefined) {
+        product.price.currency = req.body.price.currency;
+      }
+    } else {
+      product[key] = req.body[key];
+    }
+  }
+
+  await product.save();
+  return res.status(200).json({ success: true, data: product });
+}
+  module.exports = {
+    createProduct,
+    getProducts,
+    getProductById,
+    updateProduct,
+  };
