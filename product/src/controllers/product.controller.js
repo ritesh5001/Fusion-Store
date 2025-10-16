@@ -236,7 +236,7 @@ async function getProductsBySeller(req, res) {
 
   return res.status(200).json({ data: products });
 }
-
+  
   module.exports = {
     createProduct,
     getProducts,
