@@ -17,8 +17,7 @@ if (!IMAGEKIT_PUBLIC_KEY || !IMAGEKIT_PRIVATE_KEY || !urlEndpoint) {
         if (!IMAGEKIT_PUBLIC_KEY) missing.push('IMAGEKIT_PUBLIC_KEY');
         if (!IMAGEKIT_PRIVATE_KEY) missing.push('IMAGEKIT_PRIVATE_KEY');
         if (!urlEndpoint) missing.push('IMAGEKIT_URL or IMAGEKIT_URL_ENDPOINT');
-    // Log non-secret diagnostics for troubleshooting
-    // eslint-disable-next-line no-console
+
     console.error('ImageKit env diagnostics:', {
         hasPublic: !!IMAGEKIT_PUBLIC_KEY,
         hasPrivate: !!IMAGEKIT_PRIVATE_KEY,
